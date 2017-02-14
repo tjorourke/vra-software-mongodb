@@ -68,3 +68,5 @@ The single software component "Mongo-3.4" is configured to run on the mongo clus
 
 **The Composite Blueprint**
 The composite blueprint "Mongo Cluster" is setup to deploy a minimum 3 nodes and is wired up to pass request time properties to the 
+
+[For more information on configuring the VRA Blueprint see this clearascloud.com blog entry](https://clearascloud.com/2017/02/14/deploying-mongodb-cluster-with-vrealize-automation-a-how-to-guide/)
