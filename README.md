@@ -8,8 +8,8 @@ vRA Software Component to automate the delivery of a Mongo NoSQL Database Cluste
 	 - Use the prepare_template.sh script to configure the linux template, available on https://vra_server:5480/installer
  - Import the mongodb zip file from github and import into vRA using CloudClient
 	 - Open CloudClient and login
-	 - *vra login userpass* --server vra_server --user vra_user --password vra_password --tenant vra_tenant*
-	 - *vra content import --path /path/to/mongodb.zip*
+	 >*vra login userpass* --server vra_server --user vra_user --password vra_password --tenant vra_tenant*
+	 *vra content import --path /path/to/mongodb.zip*
 
 
 ----------
@@ -32,10 +32,10 @@ vRA Software Component to automate the delivery of a Mongo NoSQL Database Cluste
 #Authentication against the database and insert entry
 
 **Authenticate**:
-mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "test"
+>mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "test"
 
 **Insert Entry**:
-db.foo.insert( { x: 1, y: 1 } )
+>db.foo.insert( { x: 1, y: 1 } )
 
 
 ----------
@@ -44,12 +44,11 @@ db.foo.insert( { x: 1, y: 1 } )
 #Useful Mongo Commands
 
 **Validate replication configuration via javascript command:**
-mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin" --eval "rs.conf()"
+>mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin" --eval "rs.conf()"
 
 **Validate replication status via javascipt command:**
-mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin" --eval "status()"
+>mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin" --eval "status()"
 
 **Validate replication status via interactive shell:**
-mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin"
-show users
-
+>mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin"
+> show users
