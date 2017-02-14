@@ -17,6 +17,7 @@ vRA Software Component to automate the delivery of a Mongo NoSQL Database Cluste
 
 #Overview & Capabilities
 
+ - Uses vRealize Automation to deploy a mongo cluster on 3 nodes.
  - Deploys at least 3 servers in the clusters for quorum (never 2 as we don't want a [splitbrain](https://en.wikipedia.org/wiki/Split-brain_%28computing%29) situation)
  - Downloads & installs mongodb on the 3 nodes
  - Creates a replication set (choose a name at request time, default is "rs0")
@@ -35,3 +36,6 @@ mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "test"
 
 **Insert Entry**:
 db.foo.insert( { x: 1, y: 1 } )
+
+ 
+
