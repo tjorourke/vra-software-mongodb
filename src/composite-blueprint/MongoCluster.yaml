@@ -32,7 +32,13 @@ components:
         required: true
         visible: true
       repofile: /etc/yum.repos.d/mongodb-org-3.4.repo
+      rootPass:
+        default: ${mongo_db~deployment.root.password}
+        required: true
+        secured: true
       sshPassRPM:
+        fixed: http://dl.fedoraproject.org/pub/epel/6/x86_64/sshpass-1.05-1.el6.x86_64.rpm
+      sshPassRpmUrl:
         fixed: http://dl.fedoraproject.org/pub/epel/6/x86_64/sshpass-1.05-1.el6.x86_64.rpm
   mongo_db:
     type: Infrastructure.CatalogItem.Machine.Virtual.vSphere
@@ -60,6 +66,11 @@ components:
         default: refarch.eng.vmware.com
         required: true
         secured: false
+        visible: true
+      deployment.root.password:
+        default: ''
+        required: true
+        secured: true
         visible: true
       disks:
       - capacity: 10

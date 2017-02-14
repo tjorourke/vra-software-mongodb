@@ -1,6 +1,6 @@
 '@type': "SoftwareComponentType"
 createdDate: "2017-02-02T12:06:07.429Z"
-lastUpdated: "2017-02-14T09:45:00.159Z"
+lastUpdated: "2017-02-14T19:09:27.505Z"
 id: "Software.Mongo34"
 name: "Mongo-3.4"
 description: "Mongo Database Server 3.4.2-1"
@@ -17,6 +17,12 @@ schema:
     state:
       dependencies: []
       facets:
+      - type: "defaultValue"
+        value:
+          type: "constant"
+          value:
+            type: "secureString"
+            value: ""
       - type: "mandatory"
         value:
           type: "constant"
@@ -29,12 +35,6 @@ schema:
           value:
             type: "boolean"
             value: true
-      - type: "defaultValue"
-        value:
-          type: "constant"
-          value:
-            type: "secureString"
-            value: ""
     isMultiValued: false
   - id: "replicaSetName"
     label: "replicaSetName"
@@ -83,13 +83,13 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "editable"
+      - type: "mandatory"
         value:
           type: "constant"
           value:
             type: "boolean"
             value: true
-      - type: "mandatory"
+      - type: "editable"
         value:
           type: "constant"
           value:
@@ -116,18 +116,18 @@ schema:
           value:
             type: "boolean"
             value: true
-      - type: "visible"
-        value:
-          type: "constantClause"
-          value:
-            type: "boolean"
-            value: false
       - type: "mandatory"
         value:
           type: "constant"
           value:
             type: "boolean"
             value: true
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
     isMultiValued: false
   - id: "repofile"
     label: "repofile"
@@ -144,6 +144,22 @@ schema:
           value:
             type: "string"
             value: "/etc/yum.repos.d/mongodb-org-3.4.repo"
+    isMultiValued: false
+  - id: "sshPassRpmUrl"
+    label: "sshPassRpmUrl"
+    description: ""
+    dataType:
+      type: "primitive"
+      typeId: "STRING"
+    state:
+      dependencies: []
+      facets:
+      - type: "derivedValue"
+        value:
+          type: "constant"
+          value:
+            type: "string"
+            value: "http://dl.fedoraproject.org/pub/epel/6/x86_64/sshpass-1.05-1.el6.x86_64.rpm"
     isMultiValued: false
   - id: "mongoAdminUser"
     label: "mongoAdminUser"
@@ -208,10 +224,56 @@ schema:
             type: "string"
             value: "[mongodb-org-3.4];name=MongoDB Repository;baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.4/x86_64/;gpgcheck=1;enabled=1;gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc"
     isMultiValued: false
+  - id: "rootPass"
+    label: "rootPass"
+    description: ""
+    dataType:
+      type: "primitive"
+      typeId: "SECURE_STRING"
+    state:
+      dependencies: []
+      facets:
+      - type: "defaultValue"
+        value:
+          type: "constant"
+          value:
+            type: "secureString"
+            value: ""
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
+      - type: "encrypted"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
+    isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
+- createdDate: "2017-02-02T12:06:07.433Z"
+  lastUpdated: "2017-02-14T20:03:49.497Z"
+  script:
+    scriptContent: "echo $content | sed 's/;/\\n/g' > $repofile\nyum install -y mongodb-org"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "INSTALL"
+    label: "Install"
+- createdDate: "2017-02-02T12:06:07.434Z"
+  lastUpdated: "2017-02-14T20:03:49.497Z"
+  script:
+    scriptContent: "/usr/sbin/service mongod start"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "START"
+    label: "Start"
 - createdDate: "2017-02-02T12:06:07.436Z"
-  lastUpdated: "2017-02-14T18:08:54.442Z"
+  lastUpdated: "2017-02-14T20:03:49.497Z"
   script:
     scriptContent: "#!/bin/bash\necho \"START INSTALL\" >> /tmp/mongo_install.txt\n\
       \n# Write out all nodes in cluster to a config file\nhostname=`hostname`\n\n\
@@ -224,24 +286,31 @@ lifecycleTasks:
       sed -i '/bindIp/s/^/#/' /etc/mongod.conf\n\n# Set replication - replicaSetName\n\
       sed -i \"s/#replication:/replication:\\n  replSetName: $replicaSetName/\" /etc/mongod.conf\n\
       \n# Enable mongod on startup\n/usr/sbin/chkconfig mongod on\n\n# Configure Mongo\
-      \ for clustering\n/usr/sbin/service mongod start\n\nfor (( i = 0 ; i < ${#mongoVmNames[@]};\
+      \ for clustering\n/usr/sbin/service mongod start\n\n# Setup SSHPASS so that\
+      \ we can query all nodes in the cluster\ncurl $sshPassRpmUrl -o /tmp/sshpass.rpm\n\
+      rpm -i /tmp/sshpass.rpm > /dev/null\n\n\nfor (( i = 0 ; i < ${#mongoVmNames[@]};\
       \ i++ )); do\n   node=${mongoVmNames[$i]}.$domainName\n   if [[ $node == $primaryNode\
       \ && $primaryNode ==  *$hostname* ]];then\n        echo \"current node is designated\
       \ as initial primary\" >> /tmp/mongo_install.txt\n        # Configure replica\
       \ nodes, we only want to run this once so use primaryNode\n        # Setup Primary\n\
-      \        mongo --eval \"rs.initiate()\" --quiet  >> /tmp/mongo_install.txt\n\
-      \   \n         # Wait for primary to activate\n        while [ `(mongo --eval\
-      \ \"rs.status().members[0].stateStr\" --quiet | grep PRIMARY |wc -l)` != 1 ];do\n\
-      \             echo \"waiting for primary_node to activate : $primary_node\"\
-      \ >> /tmp/mongo_install.txt\n             sleep 5\n        done\n\n        mongo\
-      \ --eval \"rs.status().members[0].name\" >>  /tmp/mongo_install.txt\n      \
-      \  mongo --eval \"rs.status().members[0]. stateStr\" >>  /tmp/mongo_install.txt\n\
-      \n        for (( x = 0 ; x < ${#mongoVmNames[@]}; x++ )); do\n             \
-      \ subNode=${mongoVmNames[$x]}.$domainName\n              if [[ $subNode != $primaryNode\
-      \ ]];then\n                  while [[ `nslookup $subNode>/dev/null;echo $?`\
-      \ == 1 ]];do echo \"waiting for $subNode to resolve in DNS\" >>/tmp/mongo_install.txt\
-      \ ; sleep 5; done\n                  echo \"Resolved in DNS - now adding $subNode\
-      \ to Mongo cluster\" >> /tmp/mongo_install.txt\n                  echo \"mongo\
+      \n        openssl rand -base64 756 > /etc/mongod.key\n        chown mongod /etc/mongod.key\n\
+      \        chmod 400 /etc/mongod.key\n\n        mongo --eval \"rs.initiate()\"\
+      \ --quiet  >> /tmp/mongo_install.txt\n   \n         # Wait for primary to activate\n\
+      \        while [ `(mongo --eval \"rs.status().members[0].stateStr\" --quiet\
+      \ | grep PRIMARY |wc -l)` != 1 ];do\n             echo \"waiting for primary_node\
+      \ to activate : $primary_node\" >> /tmp/mongo_install.txt\n             sleep\
+      \ 5\n        done\n\n        mongo --eval \"rs.status().members[0].name\" >>\
+      \  /tmp/mongo_install.txt\n        mongo --eval \"rs.status().members[0]. stateStr\"\
+      \ >>  /tmp/mongo_install.txt\n\n        for (( x = 0 ; x < ${#mongoVmNames[@]};\
+      \ x++ )); do\n              subNode=${mongoVmNames[$x]}.$domainName\n      \
+      \        if [[ $subNode != $primaryNode ]];then\n                  while [[\
+      \ `nslookup $subNode>/dev/null;echo $?` == 1 ]];do echo \"waiting for $subNode\
+      \ to resolve in DNS\" >>/tmp/mongo_install.txt ; sleep 5; done\n           \
+      \       echo \"Resolved in DNS - now adding $subNode to Mongo cluster\" >> /tmp/mongo_install.txt\n\
+      \                  \n                  # Copy Mongo key for internal authentication\n\
+      \                  sshpass -p $rootPass scp -o StrictHostKeyChecking=no /etc/mongod.key\
+      \ root@$subNode:/etc\n                  sshpass -p $rootPass ssh -o StrictHostKeyChecking=no\
+      \ root@$subNode chown mongod /etc/mongod.key\n\n                  echo \"mongo\
       \ --eval \\\"rs.add('$subNode:27017')\\\"\" --quiet >>  /tmp/mongo_install.txt\n\
       \                  addNodeResult=`mongo --eval \"rs.add('$subNode:27017')\"\
       \ --quiet`\n                  echo $addNodeResult >>  /tmp/mongo_install.txt\n\
@@ -255,37 +324,20 @@ lifecycleTasks:
       \ --quiet --eval \"d=db.isMaster(); print( d['ismaster'] );\"`\nif [[ $MASTER\
       \ == \"true\" ]];then\n\n        # Add user\n        echo \"mongo --eval \\\"\
       db.createUser({user: \\\"$mongoAdminUser\\\",pwd: \\\"$mongoAdminPass\\\", roles:\
-      \ [ { role: \\\"root\\\", db: \\\"admin\\\" },{ role: \\\"readWrite\\\", db:\
-      \ \\\"admin\\\" }, { role: \\\"readWrite\\\", db: \\\"test\\\" }, { role: \\\
-      \"userAdminAnyDatabase\\\", db: \\\"admin\\\" } ]})\\\"\" >>  /tmp/mongo_install.txt\
-      \ \n        mongo --eval \"db.createUser({user: \\\"$mongoAdminUser\\\",pwd:\
-      \ \\\"$mongoAdminPass\\\", roles: [{ role: \\\"root\\\", db: \\\"admin\\\" },{\
+      \ [ { role: \\\"dbOwner\\\", db: \\\"admin\\\" },{ role: \\\"root\\\", db: \\\
+      \"admin\\\" },{ role: \\\"readWrite\\\", db: \\\"admin\\\" }, { role: \\\"readWrite\\\
+      \", db: \\\"test\\\" }, { role: \\\"userAdminAnyDatabase\\\", db: \\\"admin\\\
+      \" } ]})\\\"\" >>  /tmp/mongo_install.txt \n        mongo --eval \"db.createUser({user:\
+      \ \\\"$mongoAdminUser\\\",pwd: \\\"$mongoAdminPass\\\", roles: [{ role: \\\"\
+      dbOwner\\\", db: \\\"admin\\\" },{ role: \\\"root\\\", db: \\\"admin\\\" },{\
       \ role: \\\"readWrite\\\", db: \\\"admin\\\" }, { role: \\\"readWrite\\\", db:\
       \ \\\"test\\\" }, { role: \\\"userAdminAnyDatabase\\\", db: \\\"admin\\\" }\
-      \ ]})\" --quiet >>  /tmp/mongo_install.txt        \n\nfi\n\n/usr/sbin/service\
+      \ ]})\" --quiet >>  /tmp/mongo_install.txt        \nfi\n\n\n/usr/sbin/service\
       \ mongod stop >>  /tmp/mongo_install.txt\n\n# Setup authorization\nsed -i \"\
-      s/#security:/security:\\n  authorization: \\\"enabled\\\"/\" /etc/mongod.conf\n\
-      \necho \"COMPLETED INSTALL\" >> /tmp/mongo_install.txt\n"
+      s/#security:/security:\\n  authorization: \\\"enabled\\\"/\\n  keyFile: /etc/mongod.key\"\
+      \ /etc/mongod.conf\n\necho \"COMPLETED INSTALL\" >> /tmp/mongo_install.txt\n"
     isRebootAfter: false
     scriptTypeId: "Bash"
   taskDescriptorRef:
     id: "CONFIGURE"
     label: "Configure"
-- createdDate: "2017-02-02T12:06:07.434Z"
-  lastUpdated: "2017-02-14T18:08:54.442Z"
-  script:
-    scriptContent: "/usr/sbin/service mongod start"
-    isRebootAfter: false
-    scriptTypeId: "Bash"
-  taskDescriptorRef:
-    id: "START"
-    label: "Start"
-- createdDate: "2017-02-02T12:06:07.433Z"
-  lastUpdated: "2017-02-14T18:08:54.442Z"
-  script:
-    scriptContent: "echo $content | sed 's/;/\\n/g' > $repofile\nyum install -y mongodb-org"
-    isRebootAfter: false
-    scriptTypeId: "Bash"
-  taskDescriptorRef:
-    id: "INSTALL"
-    label: "Install"
