@@ -22,6 +22,7 @@ vRA Software Component to automate the delivery of a Mongo NoSQL Database Cluste
  - Downloads & installs mongodb on the 3 nodes
  - Creates a replication set (choose a name at request time, default is "rs0")
  - Creates a shared key file for [internal authentication](https://docs.mongodb.com/v3.0/tutorial/enable-internal-authentication/) required for the replica nodes
+	 - The root password is needed to automate the copying of the shared key to /etc folder
  - Creates a user against the "test" database & sets up authorization so only authenticated/authorized users can query the database.
 
 ![Screenshot](https://github.com/clearascloud/vra-software-mongodb/blob/master/images/MongoDb-Screenshot.png)
