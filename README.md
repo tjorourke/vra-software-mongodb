@@ -37,5 +37,15 @@ mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "test"
 **Insert Entry**:
 db.foo.insert( { x: 1, y: 1 } )
 
- 
+
+----------
+
+
+#Replication Commands
+
+**Validate replication configuration:**
+mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin" --eval "rs.conf()"
+
+**Validate replication status:**
+mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin" --eval "status()"
 
