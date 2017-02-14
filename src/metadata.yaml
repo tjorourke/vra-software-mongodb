@@ -1,4 +1,4 @@
-name: "auto-generated-pkg-83753545-2a4a-4331-b7bb-40d8c4b31b82"
+name: "auto-generated-pkg-bbbeb386-8e8d-4664-9898-f58de37ba67b"
 productVersion: "7.1.0-SNAPSHOT"
 data:
 - locator: "composite-blueprint/MongoCluster.yaml"
@@ -9,4 +9,4 @@ data:
 - locator: "software-component/Software.Mongo34.yaml"
   name: "Mongo-3.4"
   description: "Mongo Database Server 3.4.2-1"
-exportTime: "2017-02-14T21:45:58.794Z"
+exportTime: "2017-02-14T23:20:18.448Z"

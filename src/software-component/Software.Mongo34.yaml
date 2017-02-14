@@ -255,7 +255,7 @@ schema:
 containerFieldId: "host"
 lifecycleTasks:
 - createdDate: "2017-02-02T12:06:07.433Z"
-  lastUpdated: "2017-02-14T20:03:49.497Z"
+  lastUpdated: "2017-02-14T23:08:42.389Z"
   script:
     scriptContent: "echo $content | sed 's/;/\\n/g' > $repofile\nyum install -y mongodb-org"
     isRebootAfter: false
@@ -264,7 +264,7 @@ lifecycleTasks:
     id: "INSTALL"
     label: "Install"
 - createdDate: "2017-02-02T12:06:07.434Z"
-  lastUpdated: "2017-02-14T20:03:49.497Z"
+  lastUpdated: "2017-02-14T23:08:42.389Z"
   script:
     scriptContent: "/usr/sbin/service mongod start"
     isRebootAfter: false
@@ -273,7 +273,7 @@ lifecycleTasks:
     id: "START"
     label: "Start"
 - createdDate: "2017-02-02T12:06:07.436Z"
-  lastUpdated: "2017-02-14T20:03:49.497Z"
+  lastUpdated: "2017-02-14T23:08:42.389Z"
   script:
     scriptContent: "#!/bin/bash\necho \"START INSTALL\" >> /tmp/mongo_install.txt\n\
       \n# Write out all nodes in cluster to a config file\nhostname=`hostname`\n\n\
@@ -334,8 +334,8 @@ lifecycleTasks:
       \ \\\"test\\\" }, { role: \\\"userAdminAnyDatabase\\\", db: \\\"admin\\\" }\
       \ ]})\" --quiet >>  /tmp/mongo_install.txt        \nfi\n\n\n/usr/sbin/service\
       \ mongod stop >>  /tmp/mongo_install.txt\n\n# Setup authorization\nsed -i \"\
-      s/#security:/security:\\n  authorization: \\\"enabled\\\"/\\n  keyFile: /etc/mongod.key\"\
-      \ /etc/mongod.conf\n\necho \"COMPLETED INSTALL\" >> /tmp/mongo_install.txt\n"
+      s/#security:/security:\\n  authorization: \\\"enabled\\\"\\n  keyFile: \\\"\\\
+      /etc\\/mongod.key\\\"/\" /etc/mongod.conf\n\necho \"COMPLETED INSTALL\" >> /tmp/mongo_install.txt\n"
     isRebootAfter: false
     scriptTypeId: "Bash"
   taskDescriptorRef:

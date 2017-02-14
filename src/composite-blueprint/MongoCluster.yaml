@@ -8,39 +8,40 @@ components:
     data:
       content: '[mongodb-org-3.4];name=MongoDB Repository;baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.4/x86_64/;gpgcheck=1;enabled=1;gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc'
       domainName:
-        default: ${mongo_db~deployment.domain.name}
+        default: ${mongo_cluster~deployment.domain.name}
         editable: true
         required: true
       host:
-        fixed: ${_resource~mongo_db}
+        fixed: ${_resource~mongo_cluster}
       mongoAdminPass:
-        default: ${mongo_db~mongodb.admin.password}
+        default: ''
         required: true
         secured: true
         visible: true
       mongoAdminUser:
-        default: ${mongo_db~mongodb.admin.user}
+        default: admin
         required: true
         visible: true
       mongoHostConf:
         fixed: ' /etc/mongonodes.conf'
       mongoVmNames:
-        default: ${_resource~mongo_db~MachineName}
+        default: ${_resource~mongo_cluster~MachineName}
         editable: true
       replicaSetName:
-        default: ${mongo_db~mongodb.replicaSetName}
+        default: rs0
         required: true
         visible: true
       repofile: /etc/yum.repos.d/mongodb-org-3.4.repo
       rootPass:
-        default: ${mongo_db~deployment.root.password}
+        default: ${mongo_cluster~deployment.root.password}
         required: true
         secured: true
+        visible: false
       sshPassRPM:
         fixed: http://dl.fedoraproject.org/pub/epel/6/x86_64/sshpass-1.05-1.el6.x86_64.rpm
       sshPassRpmUrl:
         fixed: http://dl.fedoraproject.org/pub/epel/6/x86_64/sshpass-1.05-1.el6.x86_64.rpm
-  mongo_db:
+  mongo_cluster:
     type: Infrastructure.CatalogItem.Machine.Virtual.vSphere
     data:
       _cluster:
@@ -72,6 +73,7 @@ components:
         required: true
         secured: true
         visible: true
+      description: Mongo vSphere Cluster
       disks:
       - capacity: 10
         custom_properties: null
@@ -92,21 +94,6 @@ components:
         default: 2048
         max: 4096
         min: 2048
-      mongodb.admin.password:
-        default: password
-        required: true
-        secured: true
-        visible: true
-      mongodb.admin.user:
-        default: admin
-        required: true
-        secured: false
-        visible: true
-      mongodb.replicaSetName:
-        default: rs0
-        required: true
-        secured: false
-        visible: true
       provisioning_workflow:
         fixed:
           id: CloneWorkflow
@@ -130,4 +117,4 @@ components:
         min: 10
 layout:
   Mongo-3.4_1: 0,0
-  mongo_db: 0,0
+  mongo_cluster: 0,0
