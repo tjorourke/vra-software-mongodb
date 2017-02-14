@@ -51,4 +51,5 @@ vRA Software Component to automate the delivery of a Mongo NoSQL Database Cluste
 
 **Validate replication status via interactive shell:**
 >mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin"
+> 
 > show users
