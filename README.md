@@ -41,11 +41,15 @@ db.foo.insert( { x: 1, y: 1 } )
 ----------
 
 
-#Replication Commands
+#Useful Mongo Commands
 
-**Validate replication configuration:**
+**Validate replication configuration via javascript command:**
 mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin" --eval "rs.conf()"
 
-**Validate replication status:**
+**Validate replication status via javascipt command:**
 mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin" --eval "status()"
+
+**Validate replication status via interactive shell:**
+mongo --port 27017 -u "admin" -p "password" --authenticationDatabase "admin"
+show users
 
