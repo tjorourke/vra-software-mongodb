@@ -1,0 +1,12 @@
+name: "auto-generated-pkg-520b16d8-c89e-4790-913f-1ddf10eaf344"
+productVersion: "7.1.0-SNAPSHOT"
+data:
+- locator: "composite-blueprint/MongoCluster.yaml"
+  name: "Mongo Cluster"
+  description: "Mongo Cluster"
+  dependencies:
+  - "software-component/Software.Mongo34.yaml"
+- locator: "software-component/Software.Mongo34.yaml"
+  name: "Mongo-3.4"
+  description: "Mongo Database Server 3.4.2-1"
+exportTime: "2017-02-14T18:14:49.045Z"

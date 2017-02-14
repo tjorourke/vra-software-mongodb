@@ -1,0 +1,122 @@
+id: MongoCluster
+name: Mongo Cluster
+description: Mongo Cluster - Deploy at least 3 nodes for Quorum.
+status: PUBLISHED
+components:
+  Mongo-3.4_1:
+    type: Software.Mongo34
+    data:
+      content: '[mongodb-org-3.4];name=MongoDB Repository;baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.4/x86_64/;gpgcheck=1;enabled=1;gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc'
+      domainName:
+        default: ${mongo_db~deployment.domain.name}
+        editable: true
+        required: true
+      host:
+        fixed: ${_resource~mongo_db}
+      mongoAdminPass:
+        default: ${mongo_db~mongodb.admin.password}
+        required: true
+        secured: true
+        visible: true
+      mongoAdminUser:
+        default: ${mongo_db~mongodb.admin.user}
+        required: true
+        visible: true
+      mongoHostConf:
+        fixed: ' /etc/mongonodes.conf'
+      mongoVmNames:
+        default: ${_resource~mongo_db~MachineName}
+        editable: true
+      replicaSetName:
+        default: ${mongo_db~mongodb.replicaSetName}
+        required: true
+        visible: true
+      repofile: /etc/yum.repos.d/mongodb-org-3.4.repo
+      sshPassRPM:
+        fixed: http://dl.fedoraproject.org/pub/epel/6/x86_64/sshpass-1.05-1.el6.x86_64.rpm
+  mongo_db:
+    type: Infrastructure.CatalogItem.Machine.Virtual.vSphere
+    data:
+      _cluster:
+        default: 3
+        max: 10
+        min: 3
+      action:
+        fixed: FullClone
+      allow_storage_policies:
+        fixed: false
+      blueprint_type:
+        fixed: '1'
+      content:
+        default: '[mongodb-org-3.4];name=MongoDB Repository;baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.4/x86_64/;gpgcheck=1;enabled=1;gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc'
+        required: false
+        secured: false
+        visible: false
+      cpu:
+        default: 2
+        max: 2
+        min: 2
+      deployment.domain.name:
+        default: refarch.eng.vmware.com
+        required: true
+        secured: false
+        visible: true
+      disks:
+      - capacity: 10
+        custom_properties: null
+        id: 1486151562272
+        initial_location: ''
+        is_clone: true
+        label: Hard disk 1
+        storage_reservation_policy: ''
+        userCreated: false
+        volumeId: 0
+      guest_customization_specification: Linux
+      machine_prefix:
+        fixed:
+          id: b3-to-vm-
+      max_network_adapters: {}
+      max_volumes: {}
+      memory:
+        default: 2048
+        max: 4096
+        min: 2048
+      mongodb.admin.password:
+        default: password
+        required: true
+        secured: true
+        visible: true
+      mongodb.admin.user:
+        default: admin
+        required: true
+        secured: false
+        visible: true
+      mongodb.replicaSetName:
+        default: rs0
+        required: true
+        secured: false
+        visible: true
+      provisioning_workflow:
+        fixed:
+          id: CloneWorkflow
+          label: CloneWorkflow
+      repofile:
+        default: /etc/yum.repos.d/mongodb-org-3.4.repo
+        required: false
+        secured: false
+        visible: false
+      security_groups: []
+      security_tags: []
+      source_machine:
+        fixed:
+          id: c4b65412-b355-4b38-bd88-128913b91c66
+          label: Centos7-b3-to-vra
+      source_machine_name:
+        fixed: Centos7-b3-to-vra
+      storage:
+        default: 10
+        max: 50
+        min: 10
+layout:
+  Mongo-3.4_1: 0,0
+  mongo_db: 0,0
