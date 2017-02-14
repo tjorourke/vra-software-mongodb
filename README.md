@@ -25,7 +25,10 @@ vRA Software Component to automate the delivery of a Mongo NoSQL Database Cluste
 	 - The root password is needed to automate the copying of the shared key to /etc folder
  - Creates a user against the "test" database & sets up authorization so only authenticated/authorized users can query the database.
 
+**Composite Blueprint - Mongo Cluster**
 ![Screenshot](https://github.com/clearascloud/vra-software-mongodb/blob/master/images/Mongo_cluster_composite_blueprint.png)
+
+**Provide mongo details**
 ![Screenshot](https://github.com/clearascloud/vra-software-mongodb/blob/master/images/Mongo_cluster_software.png)
 
 
